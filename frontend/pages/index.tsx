@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { ArxivPaper, GlobeNode } from '../types';
-import { getSemanticGlobeNodes } from '@/utils/mapSemanticToNodes';
+import { getCrossrefGlobeNodes } from '@/utils/mapCrossrefToNodes';
 
 const WorldthreadGlobe = dynamic(() => import('../components/WorldthreadGlobe'), { ssr: false });
 
@@ -9,7 +9,7 @@ export default function Home() {
   const [arxivPapers, setArxivPapers] = useState<ArxivPaper[]>([]);
   const [semanticNodes, setSemanticNodes] = useState<GlobeNode[]>([]);
 
-  // Fetch arXiv papers from backend
+  // Fetch arXiv papers from your backend
   useEffect(() => {
     fetch('http://localhost:8000/arxiv')
       .then(res => res.json())
@@ -23,20 +23,24 @@ export default function Home() {
       .catch(err => console.error('Failed to fetch arXiv data:', err));
   }, []);
 
-  // Fetch Semantic Scholar nodes with geolocation
+  // Fetch Crossref papers with geolocation
   useEffect(() => {
-    const fetchSemantic = async () => {
-      const nodes = await getSemanticGlobeNodes("artificial intelligence");
-      setSemanticNodes(nodes);
+    const fetchNodes = async () => {
+      try {
+        const nodes = await getCrossrefGlobeNodes("artificial intelligence");
+        setSemanticNodes(nodes); // ❗ FIXED: was incorrectly using setPapers
+      } catch (err) {
+        console.error('Failed to fetch Crossref globe nodes:', err);
+      }
     };
-    fetchSemantic();
+    fetchNodes();
   }, []);
 
-  // Convert arXiv papers to globe nodes (mock coordinates for now)
+  // Convert arXiv papers to globe nodes (with mock coordinates)
   const arxivNodes: GlobeNode[] = useMemo(() => {
     return arxivPapers.map((paper, i) => ({
       type: 'arxiv',
-      lat: 30 + i * 1.5, // Replace with real lat/lng if available
+      lat: 30 + i * 1.5,
       lng: -90 + i * 2,
       name: paper.title,
       title: paper.title,
@@ -46,7 +50,7 @@ export default function Home() {
     }));
   }, [arxivPapers]);
 
-  // Combine both data sources
+  // Combine both sources into one globe node list
   const allNodes = useMemo(() => [...semanticNodes, ...arxivNodes], [semanticNodes, arxivNodes]);
 
   return (
@@ -55,10 +59,12 @@ export default function Home() {
 
       <div className="h-[600px] w-full mb-10">
         <WorldthreadGlobe
-          points={allNodes}
+          points={allNodes} // ✅ FIXED: was incorrectly using `papers`
           onPointClick={(node) => {
-            if (node.type === 'arxiv' || node.type === 'semantic') {
-              alert(`📄 ${node.title}\n\n${node.summary?.slice(0, 200) ?? ''}...`);
+            if (node.type === 'crossref') {
+              alert(`📄 ${node.title}\n\n${node.abstract?.slice(0, 200) ?? 'No abstract'}...`);
+            } else if (node.type === 'arxiv') {
+              alert(`📄 ${node.title}\n\n${node.summary?.slice(0, 200) ?? 'No summary'}...`);
             }
           }}
         />

@@ -1,12 +1,4 @@
-export interface Repo {
-  type: 'repo';
-  name: string;
-  description: string;
-  stars: number;
-  language: string;
-  lat: number;
-  lng: number;
-}
+
 
 export interface ArxivPaper {
   type: 'paper';
@@ -21,15 +13,12 @@ export interface ArxivPaper {
 }
 
 export interface GlobeNode {
-  type: 'repo' | 'arxiv';
+  type: 'arxiv';
   lat: number;
   lng: number;
-  name: string;
-  description?: string;
-  stars?: number;
-  language?: string;
-  link?: string;
-  authors?: string;
-  published?: string;
+  name: string; // REQUIRED by react-globe.gl
+  title: string;
+  summary: string;
+  authors: string;
+  published: string;
 }
-
