@@ -66,7 +66,7 @@ export async function fetchTopicNodes(
     console.log(`🔍 Fetching fresh articles from: ${url}`);
     
     const response = await fetch(url, {
-      signal: AbortSignal.timeout(15000) // Shorter timeout for better UX
+      signal: AbortSignal.timeout(60000) // couldnt do 15, maybe 60 works better
     });
     
     if (!response.ok) {
