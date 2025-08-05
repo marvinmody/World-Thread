@@ -1,4 +1,4 @@
-// For arXiv papers
+// types.ts
 export interface ArxivPaper {
   type: 'paper';
   title: string;
@@ -11,9 +11,9 @@ export interface ArxivPaper {
   lng: number;
 }
 
-// Unified node for globe visualization
+// Enhanced unified node for globe visualization
 export type GlobeNode = {
-  type: 'arxiv' | 'crossref';
+  type: 'arxiv' | 'crossref' | 'semantic_scholar' | 'fallback';
   lat: number;
   lng: number;
   label: string;
@@ -25,9 +25,10 @@ export type GlobeNode = {
   published?: string;
   link?: string;
   category?: string;
-  topic?: string; // opt for crossref nodes
+  topic?: string;
+  isRecent?: boolean;
+  isFallback?: boolean; // New field for fallback nodes
 };
-
 
 export interface Repo {
   name: string;

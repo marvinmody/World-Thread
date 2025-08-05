@@ -1,3 +1,5 @@
+//papers.ts
+// This API route fetches research papers from both arXiv and Crossref based on the
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCrossrefGlobeNodes } from '@/utils/mapCrossrefToNodes';
 import { getArxivGlobeNodes } from '@/utils/mapArxivToNodes';
